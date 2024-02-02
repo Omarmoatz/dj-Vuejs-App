@@ -17,23 +17,21 @@
                 Add Task
               </button>
         </div>
-        <div class=" mt-5 " id="starting">
+        <div class=" mt-5 " >
             <table class="table">
                 <thead>
                   <tr>
-                    <th scope="col">Id</th>
                     <th scope="col">Task</th>
                     <th scope="col">Notes</th>
                     <th scope="col">Done</th>
                     <th scope="col">Action</th>
                   </tr>
                 </thead>
-                <tbody>
-                  <tr>
-                    <th scope="row">1</th>
-                    <td>Mark</td>
-                    <td>Mark</td>
-                    <td>Otto</td>
+                <tbody id="starting">
+                  <tr v-for="item in todo_list ">
+                    <td>${item.task}</td>
+                    <td>${item.note}</td>
+                    <td>${item.done}</td>
                     <td>
                         <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#EditModal">
                             Edit
@@ -93,10 +91,19 @@
             el: '#starting',
             delimiters: ['${','}'],
             data: {
-                todo_list: [],
+                todo_list: []
             },
-            mounted:function(){},
-            methods:{}
+            mounted: function(){
+                this.get_data()
+            },
+            methods: {
+                get_data: function(){
+                    axios.get('/todo/api//')
+                    .then((response) =>{
+                        this.todo_list = response.data
+                    })
+                }
+            }
         })
     </script>
 </body>
