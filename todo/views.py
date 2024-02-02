@@ -8,3 +8,9 @@ from .serializers import TodoSerializer
 class TodoViewSet(viewsets.ModelViewSet):
     queryset = Todo.objects.all()
     serializer_class = TodoSerializer
+
+
+def todo_list(request):
+    return render(request, 'todo/todo_list.html',{})
+
+    
