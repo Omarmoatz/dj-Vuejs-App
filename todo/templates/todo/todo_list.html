@@ -36,7 +36,7 @@
                         <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#EditModal">
                             Edit
                           </button>
-                        <button type="button" class="btn btn-danger">
+                        <button type="button" class="btn btn-danger" v-on:click="delete_data(item.id)">
                             Delete
                           </button>
                     </td>
@@ -83,7 +83,7 @@
                         <label for="text" class="form-label">Notes</label>
                         <input type="text" class="form-control" id="exampl" v-model="new_todo.note">
                       </div>
-                      
+
                       <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                         <button type="submit" class="btn btn-primary" >Save changes</button>
@@ -127,6 +127,12 @@
                     console.log('ay 7aga');
                     axios.post('/todo/api//',this.new_todo)
                     .then((response) =>{
+                        this.get_data()
+                    })
+                },
+                delete_data: function(id){
+                    axios.delete(`/todo/api//${id}/`)
+                    .then((response)=> {
                         this.get_data()
                     })
                 }
