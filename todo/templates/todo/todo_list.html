@@ -10,7 +10,7 @@
 </head>
 <body>
     
-    <div class="container mx-auto">
+    <div class="container">
         <div class="mt-5">
             <h1 class="mx-auto">ToDo App</h1>
             <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#AddtModal">
@@ -72,12 +72,26 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                ...
+
+                <form v-on:submit.prevent="add_data()">
+                    <div class="mb-3">
+                        <label for="text" class="form-label">Task</label>
+                        <input type="text" class="form-control" id="example" v-model="new_todo.task">
+                      </div>
+
+                      <div class="mb-3">
+                        <label for="text" class="form-label">Notes</label>
+                        <input type="text" class="form-control" id="exampl" v-model="new_todo.note">
+                      </div>
+                      
+                      <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary" >Save changes</button>
+                        </div>
+                </form>
+
                 </div>
-                <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary">Save changes</button>
-                </div>
+
             </div>
             </div>
         </div>
@@ -87,11 +101,17 @@
     <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.6.7/axios.min.js" integrity="sha512-NQfB/bDaB8kaSXF8E77JjhHG5PM6XVRxvHzkZiwl3ddWCEPBa23T76MuWSwAJdMGJnmQqM0VeY9kFszsrBEFrQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script>
+        axios.defaults.xsrfCookieName = 'csrftoken'
+        axios.defaults.xsrfHeaderName = 'X-CSRFTOKEN'
         let app = new Vue({
             el: '#starting',
             delimiters: ['${','}'],
             data: {
-                todo_list: []
+                todo_list: [],
+                new_todo:{
+                    'task':null,
+                    'note':null
+                }
             },
             mounted: function(){
                 this.get_data()
@@ -101,6 +121,13 @@
                     axios.get('/todo/api//')
                     .then((response) =>{
                         this.todo_list = response.data
+                    })
+                },
+                add_data: function(){
+                    console.log('ay 7aga');
+                    axios.post('/todo/api//',this.new_todo)
+                    .then((response) =>{
+                        this.get_data()
                     })
                 }
             }
