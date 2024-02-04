@@ -1,11 +1,9 @@
-{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Todo App</title>
-    <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
 </head>
 <body>
@@ -33,7 +31,8 @@
                     <td>${item.note}</td>
                     <td>${item.done}</td>
                     <td>
-                        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#EditModal">
+                        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#EditModal"
+                        v-on:click="get_single_task(item.id)">
                             Edit
                           </button>
                         <button type="button" class="btn btn-danger" v-on:click="delete_data(item.id)">
@@ -45,30 +44,43 @@
               </table>
         </div>
           
-        <!-- Modal -->
+        <!--Edit Modal -->
         <div class="modal fade" id="EditModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
             <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                <h1 class="modal-title fs-5" id="exampleModalLabel">Modal title</h1>
+                <h1 class="modal-title fs-5" id="EditModal">Modal title</h1>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                ...
-                </div>
-                <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary">Save changes</button>
+
+                    <form v-on:submit.prevent="updatetask()">
+                        <div class="mb-3">
+                            <label for="text" class="form-label">Task</label>
+                            <input type="text" class="form-control" id="example" v-model="currunt_task.task">
+                        </div>
+    
+                        <div class="mb-3">
+                            <label for="text" class="form-label">Notes</label>
+                            <input type="text" class="form-control" id="exampl" v-model="currunt_task.note">
+                        </div>
+    
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            <button type="submit" class="btn btn-primary" >Save changes</button>
+                        </div>
+                    </form>
+
                 </div>
             </div>
             </div>
         </div>
-        <!-- Modal -->
+        <!-- Add Modal -->
         <div class="modal fade" id="AddtModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
             <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                <h1 class="modal-title fs-5" id="exampleModalLabel">Modal title</h1>
+                <h1 class="modal-title fs-5" id="AddtModal">Modal title</h1>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
@@ -77,17 +89,17 @@
                     <div class="mb-3">
                         <label for="text" class="form-label">Task</label>
                         <input type="text" class="form-control" id="example" v-model="new_todo.task">
-                      </div>
+                    </div>
 
-                      <div class="mb-3">
+                    <div class="mb-3">
                         <label for="text" class="form-label">Notes</label>
                         <input type="text" class="form-control" id="exampl" v-model="new_todo.note">
-                      </div>
+                    </div>
 
-                      <div class="modal-footer">
+                    <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                        <button type="submit" class="btn btn-primary" >Save changes</button>
-                        </div>
+                        <button type="submit" class="btn btn-primary" >Add Task</button>
+                    </div>
                 </form>
 
                 </div>
@@ -96,7 +108,6 @@
             </div>
         </div>
     </div>
-    <script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.6.7/axios.min.js" integrity="sha512-NQfB/bDaB8kaSXF8E77JjhHG5PM6XVRxvHzkZiwl3ddWCEPBa23T76MuWSwAJdMGJnmQqM0VeY9kFszsrBEFrQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
@@ -111,7 +122,8 @@
                 new_todo:{
                     'task':null,
                     'note':null
-                }
+                },
+                currunt_task: {}
             },
             mounted: function(){
                 this.get_data()
@@ -123,10 +135,24 @@
                         this.todo_list = response.data
                     })
                 },
+                get_single_task: function(id){ 
+                  axios.get(`/todo/api//${id}/`)  
+                  .then((response)=>{
+                    this.currunt_task = response.data
+                    console.log(this.currunt_task);
+                  })
+                },
                 add_data: function(){
                     console.log('ay 7aga');
                     axios.post('/todo/api//',this.new_todo)
                     .then((response) =>{
+                        this.get_data()
+                    })
+                },
+                updatetask: function() {
+                    axios.put(`/todo/api//${this.currunt_task.id}/`,this.currunt_task)
+                    .then((response)=>{
+                        this.currunt_task = response.data ;
                         this.get_data()
                     })
                 },
