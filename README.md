@@ -1,2 +1,2 @@
-# dj-Vuejs-App
-A django project using vuejs to do CRUD operations
+## dj Vuejs App 
+is a Django project that utilizes Vue.js to implement CRUD (Create, Read, Update, Delete) operations. It combines the backend capabilities of Django with the frontend interactivity of Vue.js, allowing users to perform various data manipulation tasks such as creating, reading, updating, and deleting records. The project aims to demonstrate the integration of these technologies to build a web application with dynamic and responsive user interfaces.
